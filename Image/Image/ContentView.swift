@@ -7,19 +7,63 @@
 
 import SwiftUI
 
+enum ImageLoaderError: Error {
+  case incorrectImageData
+}
+
+final class ContentViewModel: ObservableObject {
+    @Published var image: Image?
+    
+    init() {
+        getImage()
+    }
+    
+    func getImage() {
+        guard let url = URL(string: "https://randomfox.ca/images/\(Int.random(in: 1...121)).jpg") else { return }
+        
+        let task = URLSession.shared.dataTask(with: url) { data, response, error in
+            if let error = error {
+                print("Ошибка: \(error)")
+                return
+            }
+            
+            guard let data = data else {
+                print("Нет данных")
+                return
+            }
+            
+            guard let uiImage = UIImage(data: data) else { return }
+            
+            DispatchQueue.main.async {
+                self.image = Image(uiImage: uiImage)
+            }
+        }
+        task.resume()
+    }
+
+}
+
 struct ContentView: View {
-    private let url = URL(string: "https://cs8.pikabu.ru/post_img/big/2016/02/04/7/145458292112119207.jpg")
+    @StateObject private var viewModel = ContentViewModel()
     
     var body: some View {
         ZStack {
             Color(.white).ignoresSafeArea()
             
             ZStack{
-                AsyncImage(url: url)
-                    .frame(width: 70, height: 900, alignment: .top)
-
+                if let image = viewModel.image {
+                    image
+                        .resizable()
+                        .scaledToFit()
+                        .padding()
+                        .overlay{
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(.pink, lineWidth: 4)
+                        }
+                }
+                
                 Button(action: {
-                    print("изменение")
+                    viewModel.getImage()
                 }, label: {
                     Text("Change image")
                         .font(.title)
