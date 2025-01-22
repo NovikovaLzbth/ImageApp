@@ -6,9 +6,10 @@
 //
 
 import SwiftUI
+import CoreData
 
 enum ImageLoaderError: Error {
-  case incorrectImageData
+    case incorrectImageData
 }
 
 final class ContentViewModel: ObservableObject {
@@ -40,49 +41,79 @@ final class ContentViewModel: ObservableObject {
         }
         task.resume()
     }
-
+    
+    func writeImage() {
+        
+    }
+    
+    func deleteImage() {
+        
+    }
 }
 
 struct ContentView: View {
     @StateObject private var viewModel = ContentViewModel()
+    @State private var isShowFavouriteScreen: Bool = false
     
     var body: some View {
-        ZStack {
-            Color(.white).ignoresSafeArea()
-            
-            ZStack{
+        NavigationStack {
+            //Изображение по URL
+            VStack {
                 if let image = viewModel.image {
                     image
                         .resizable()
                         .scaledToFit()
-                        .padding()
+                        .aspectRatio(contentMode: .fit)
+                        .cornerRadius(20)
                         .overlay{
-                            RoundedRectangle(cornerRadius: 10)
+                            RoundedRectangle(cornerRadius: 20)
                                 .stroke(.pink, lineWidth: 4)
                         }
                 }
                 
-                Button(action: {
-                    viewModel.getImage()
-                }, label: {
-                    Text("Change image")
-                        .font(.title)
-                        .padding()
-                        .background(Color.pink)
-                        .foregroundStyle(.white)
-                        .cornerRadius(40)
-                        .padding()
-                        .padding(-2)
-                        .overlay {
-                            RoundedRectangle(cornerRadius: 45)
-                                .stroke(.pink, lineWidth: 5)
-                        }
-                })
-                .frame(width: 250, height: 600, alignment: .bottom)
+                //Кнопка смены изображения
+                HStack {
+                    Button(action: {
+                        viewModel.getImage()
+                    }, label: {
+                        Text("Change image")
+                            .font(.system(size: 20))
+                            .padding()
+                            .background(Color.pink)
+                            .foregroundStyle(.white)
+                            .cornerRadius(13)
+                            .padding()
+                            .padding(-8)
+                        
+                    })
+                    .frame(height: 120)
+                    
+                }
             }
+            .padding(.horizontal, 16)
+            .navigationTitle("Main screen")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        isShowFavouriteScreen = true
+                    } label: {
+                        Text("Избранное")
+                    }
+                }
+            }
+            //Переход на экран Избранное
+            .navigationDestination(isPresented: $isShowFavouriteScreen) {
+                VStack {
+                    Text("Favourite")
+                }
+                .navigationTitle("Favourites")
+            }
+            
         }
+        
     }
 }
+
 
 #Preview {
     ContentView()
