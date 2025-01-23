@@ -8,12 +8,8 @@
 import SwiftUI
 import CoreData
 
-enum ImageLoaderError: Error {
-    case incorrectImageData
-}
-
 final class ContentViewModel: ObservableObject {
-    @Published var image: Image?
+    @Published var uiImage: UIImage?
     
     init() {
         getImage()
@@ -36,31 +32,57 @@ final class ContentViewModel: ObservableObject {
             guard let uiImage = UIImage(data: data) else { return }
             
             DispatchQueue.main.async {
-                self.image = Image(uiImage: uiImage)
+                self.uiImage = uiImage
             }
         }
         task.resume()
     }
     
-    func writeImage() {
+    func writeImage(uiImage: UIImage, persistenceController: PersistenceController) {
+        guard let data = uiImage.pngData() else { return }
+        let image = FoxImage(context: persistenceController.viewContext)
         
+        image.data = data
+        image.uuid = UUID()
+        
+        do {
+            try persistenceController.viewContext.save()
+            print("изображение сохранено")
+        } catch {
+            print("Ошибка сохранения в базу данных")
+        }
     }
     
-    func deleteImage() {
-        
+    func getImageFavourite(uiImage: UIImage, persistenceController: PersistenceController) -> [FoxImage]{
+        let fetchRequest: NSFetchRequest<FoxImage> = FoxImage.fetchRequest()
+        do{
+            return try persistenceController.viewContext.fetch(fetchRequest)
+        }catch{
+            return[]
+        }
     }
+    
+//
+//    func deleteImage() {
+//
+//    }
 }
 
 struct ContentView: View {
-    @StateObject private var viewModel = ContentViewModel()
     @State private var isShowFavouriteScreen: Bool = false
+    
+    @Environment(\.managedObjectContext) var persistenceController
+    
+    @StateObject private var viewModel = ContentViewModel()
+    
+    @State private var favouriteView = FavouriteView()
     
     var body: some View {
         NavigationStack {
             //Изображение по URL
             VStack {
-                if let image = viewModel.image {
-                    image
+                if let image = viewModel.uiImage {
+                    Image(uiImage: image)
                         .resizable()
                         .scaledToFit()
                         .aspectRatio(contentMode: .fit)
@@ -88,6 +110,16 @@ struct ContentView: View {
                     })
                     .frame(height: 120)
                     
+                    //кнопка для добавления в избранное
+                    Button {
+                        guard let uiImage = viewModel.uiImage else { return }
+                        viewModel.writeImage(uiImage: uiImage, persistenceController: PersistenceController())
+                    } label: {
+                        Image("pngwing.png")
+                    }
+                    .padding(-230)
+                    .scaleEffect(0.06)
+
                 }
             }
             .padding(.horizontal, 16)
@@ -104,9 +136,9 @@ struct ContentView: View {
             //Переход на экран Избранное
             .navigationDestination(isPresented: $isShowFavouriteScreen) {
                 VStack {
-                    Text("Favourite")
+                    favouriteView
                 }
-                .navigationTitle("Favourites")
+                    
             }
             
         }
@@ -114,6 +146,18 @@ struct ContentView: View {
     }
 }
 
+struct FavouriteView: View {
+    var body: some View {
+        VStack {
+            List {
+                VStack {
+                   Text("fldsa'f")
+                }
+            }
+        }
+        .navigationTitle("Favourites")
+    }
+}
 
 #Preview {
     ContentView()

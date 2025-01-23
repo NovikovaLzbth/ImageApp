@@ -7,11 +7,14 @@
 
 import SwiftUI
 
+private let persistenceController = PersistenceController()
+
 @main
 struct ImageApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environment(\.managedObjectContext, persistenceController.viewContext)
         }
     }
 }
