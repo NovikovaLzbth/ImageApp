@@ -45,27 +45,31 @@ final class ContentViewModel: ObservableObject {
         image.data = data
         image.uuid = UUID()
         
-        do {
-            try persistenceController.viewContext.save()
-            print("изображение сохранено")
-        } catch {
-            print("Ошибка сохранения в базу данных")
+        DispatchQueue.main.async {
+            do {
+                try persistenceController.viewContext.save()
+                print("изображение сохранено")
+            } catch {
+                print("Ошибка сохранения в базу данных")
+            }
         }
     }
     
-    func getImageFavourite(uiImage: UIImage, persistenceController: PersistenceController) -> [FoxImage]{
-        let fetchRequest: NSFetchRequest<FoxImage> = FoxImage.fetchRequest()
-        do{
-            return try persistenceController.viewContext.fetch(fetchRequest)
-        }catch{
-            return[]
-        }
+    func deleteAllImages(persistenceController: PersistenceController) {
+        
+//        do {
+//            persistenceController.viewContext.delete(<#T##object: NSManagedObject##NSManagedObject#>, )
+//        }
+//            
+//            DispatchQueue.main.async {
+//                do {
+//                    try persistenceController.viewContext.save()
+//                    print("Все изображения удалены")
+//                } catch {
+//                    print("Ошибка при удалении изображений из базы данных")
+//                }
+//            }
     }
-    
-//
-//    func deleteImage() {
-//
-//    }
 }
 
 struct ContentView: View {
@@ -75,12 +79,48 @@ struct ContentView: View {
     
     @StateObject private var viewModel = ContentViewModel()
     
-    @State private var favouriteView = FavouriteView()
+    @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \FoxImage.uuid, ascending: true)], animation: .default)
+    private var images: FetchedResults<FoxImage>
     
     var body: some View {
-        NavigationStack {
-            //Изображение по URL
+        TabView {
+            HomeView(viewModel: viewModel)
+                .tabItem {
+                    Label("Home", systemImage: "house")
+                }
+            
+            FavourutesView(viewModel: viewModel)
+                .tabItem {
+                    Label("Selected", systemImage: "heart.fill")
+                }
+        }
+    }
+}
+#Preview {
+    ContentView()
+}
+        
+struct HomeView: View {
+    
+    @State private var isShowFavouriteScreen: Bool = false
+    
+    @Environment(\.managedObjectContext) var persistenceController
+    
+    @ObservedObject var viewModel: ContentViewModel
+    
+    var body: some View {
+        VStack {
+            //Заголовок Main screen
+            ZStack {
+                Text("Main screen")
+                    .textScale(.default)
+                    .font(.largeTitle)
+                    .bold()
+                    .position(x: 120, y: 50)
+            }
+            
             VStack {
+                //Изображение по URL
                 if let image = viewModel.uiImage {
                     Image(uiImage: image)
                         .resizable()
@@ -93,8 +133,8 @@ struct ContentView: View {
                         }
                 }
                 
-                //Кнопка смены изображения
                 HStack {
+                    //Кнопка смены изображения
                     Button(action: {
                         viewModel.getImage()
                     }, label: {
@@ -110,7 +150,7 @@ struct ContentView: View {
                     })
                     .frame(height: 120)
                     
-                    //кнопка для добавления в избранное
+                    //Кнопка для добавления в избранное
                     Button {
                         guard let uiImage = viewModel.uiImage else { return }
                         viewModel.writeImage(uiImage: uiImage, persistenceController: PersistenceController())
@@ -119,46 +159,43 @@ struct ContentView: View {
                     }
                     .padding(-230)
                     .scaleEffect(0.06)
-
+                    
                 }
             }
+            .position(x: 183, y: 10)
             .padding(.horizontal, 16)
-            .navigationTitle("Main screen")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        isShowFavouriteScreen = true
-                    } label: {
-                        Text("Избранное")
+        }
+    }
+}
+
+
+struct FavourutesView: View {
+    
+    @ObservedObject var viewModel: ContentViewModel
+    
+    @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \FoxImage.uuid, ascending: true)], animation: .default)
+    private var images: FetchedResults<FoxImage>
+    
+    var body: some View {
+            VStack {
+//                Button {
+////                    viewModel.deleteAllImages(persistenceController: PersistenceController())
+//                } label: {
+//                    Text("nn")
+//                }
+
+                List {
+                    ForEach(images, id: \.id) { image in
+                        if let data = image.data {
+                            if let uiImage = UIImage(data: data) {
+                                Image(uiImage: uiImage)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .padding(.horizontal, 16)
+                            }
+                        }
                     }
                 }
             }
-            //Переход на экран Избранное
-            .navigationDestination(isPresented: $isShowFavouriteScreen) {
-                VStack {
-                    favouriteView
-                }
-                    
-            }
-            
-        }
-        
     }
-}
-
-struct FavouriteView: View {
-    var body: some View {
-        VStack {
-            List {
-                VStack {
-                   Text("fldsa'f")
-                }
-            }
-        }
-        .navigationTitle("Favourites")
-    }
-}
-
-#Preview {
-    ContentView()
 }
