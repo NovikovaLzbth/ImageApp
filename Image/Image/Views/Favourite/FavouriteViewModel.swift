@@ -8,7 +8,7 @@
 import SwiftUI
 
 final class FavouritesViewModel: ObservableObject {
-    private let imageStorage: ImageStorage
+    let imageStorage: ImageStorage
     
     init(imageStorage: ImageStorage) {
         self.imageStorage = imageStorage

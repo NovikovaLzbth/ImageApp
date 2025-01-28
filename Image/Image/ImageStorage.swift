@@ -9,9 +9,7 @@ import SwiftUI
 import CoreData
 
 final class ImageStorage: ObservableObject {
-    
     private let persistenceController: PersistenceController
-    
     private var context: NSManagedObjectContext {
         persistenceController.viewContext
     }
@@ -35,6 +33,16 @@ final class ImageStorage: ObservableObject {
                 print("Ошибка сохранения в базу данных")
             }
         }
+    }
+    
+    func edit() {
+        // найти конкретный объект с помощью nsManagedObjectID
+        
+        /*
+         let image = FoxImage(context: context)
+         
+         imamge.commtn =
+         */
     }
     
     func delete(at offsets: IndexSet, images: [FoxImage]) {

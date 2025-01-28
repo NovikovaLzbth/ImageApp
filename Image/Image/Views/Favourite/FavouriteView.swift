@@ -26,7 +26,7 @@ struct FavouritesView: View {
                         if let data = image.data {
                             if let uiImage = UIImage(data: data) {
                                 NavigationLink {
-                                    EmptyView()
+                                    SpecificView(imageStorage: viewModel.imageStorage, fieldValue: "")
                                 } label: {
                                     Image(uiImage: uiImage)
                                         .resizable()
@@ -55,7 +55,7 @@ struct FavouritesView: View {
                     } label: {
                         Text("Удалить все")
                     }
-
+                    
                 }
             }
             
