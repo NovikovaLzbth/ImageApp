@@ -30,8 +30,9 @@ struct HomeView: View {
                                 .cornerRadius(20)
                                 .overlay{
                                     RoundedRectangle(cornerRadius: 20)
-                                        .stroke(.pink, lineWidth: 4)
+                                        .stroke(.black, lineWidth: 4)
                                 }
+                                .padding(16)
                         }
                         
                         HStack {
@@ -42,7 +43,7 @@ struct HomeView: View {
                                 Text("Change image")
                                     .font(.system(size: 20))
                                     .padding()
-                                    .background(Color.pink)
+                                    .background(Color.gray)
                                     .foregroundStyle(.white)
                                     .cornerRadius(13)
                                     .padding()

@@ -6,16 +6,18 @@
 //
 
 import SwiftUI
+import CoreData
 
 final class SpecificViewModel: ObservableObject {
+    
     let imageStorage: ImageStorage
     
     init(imageStorage: ImageStorage) {
         self.imageStorage = imageStorage
     }
     
-    func addComment() {
-        
-        imageStorage.edit()
+    func addComment(text: String, objectID: NSManagedObjectID) {
+        imageStorage.edit(objectID: objectID, comment: text)
     }
 }
+

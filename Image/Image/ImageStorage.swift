@@ -9,6 +9,7 @@ import SwiftUI
 import CoreData
 
 final class ImageStorage: ObservableObject {
+    
     private let persistenceController: PersistenceController
     private var context: NSManagedObjectContext {
         persistenceController.viewContext
@@ -35,14 +36,29 @@ final class ImageStorage: ObservableObject {
         }
     }
     
-    func edit() {
-        // найти конкретный объект с помощью nsManagedObjectID
+    //найти элемент в бд и получить его по objectID
+    func edit(objectID: NSManagedObjectID?, comment: String) {
+        guard let objectID = objectID else {
+            
+            return
+        }
         
-        /*
-         let image = FoxImage(context: context)
-         
-         imamge.commtn =
-         */
+        let image = try self.context.existingObject(with: objectID) as! FoxImage
+        
+        image.comment = comment
+        catch {
+            image = FoxImage(context: context)
+            image.comment = comment
+        }
+        
+        DispatchQueue.main.async {
+            do {
+                try self.context.save()
+                print("комментарий добавлен")
+            } catch {
+                print("Ошибка")
+            }
+        }
     }
     
     func delete(at offsets: IndexSet, images: [FoxImage]) {
@@ -66,23 +82,21 @@ final class ImageStorage: ObservableObject {
         } catch {
             print("Ошибка при загрузке изображений: \(error.localizedDescription)")
         }
-        
         return images
     }
     
     func deleteAll() {
-            let deleteRequest = NSBatchDeleteRequest(fetchRequest: NSFetchRequest<NSFetchRequestResult>(entityName: "FoxImage"))
-            deleteRequest.resultType = .resultTypeObjectIDs
-            
-            do {
-                let deleteRequestResult = try context.execute(deleteRequest) as? NSBatchDeleteResult
-                guard let deletedPlaceIds = deleteRequestResult?.result as? [NSManagedObjectID] else {
-                    return
-                }
-                NSManagedObjectContext.mergeChanges(fromRemoteContextSave: [NSDeletedObjectsKey: deletedPlaceIds], into: [context])
-            } catch {
-                print("Ошибка при удалении всех изображений: \(error.localizedDescription)")
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: NSFetchRequest<NSFetchRequestResult>(entityName: "FoxImage"))
+        deleteRequest.resultType = .resultTypeObjectIDs
+        
+        do {
+            let deleteRequestResult = try context.execute(deleteRequest) as? NSBatchDeleteResult
+            guard let deletedPlaceIds = deleteRequestResult?.result as? [NSManagedObjectID] else {
+                return
             }
+            NSManagedObjectContext.mergeChanges(fromRemoteContextSave: [NSDeletedObjectsKey: deletedPlaceIds], into: [context])
+        } catch {
+            print("Ошибка при удалении всех изображений: \(error.localizedDescription)")
         }
-    
+    }
 }

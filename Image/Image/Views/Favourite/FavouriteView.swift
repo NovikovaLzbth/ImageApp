@@ -26,7 +26,7 @@ struct FavouritesView: View {
                         if let data = image.data {
                             if let uiImage = UIImage(data: data) {
                                 NavigationLink {
-                                    SpecificView(imageStorage: viewModel.imageStorage, fieldValue: "")
+                                    SpecificView(imageStorage: viewModel.imageStorage, fieldValue: "", image: image)
                                 } label: {
                                     Image(uiImage: uiImage)
                                         .resizable()
@@ -35,7 +35,7 @@ struct FavouritesView: View {
                                         .cornerRadius(20)
                                         .overlay{
                                             RoundedRectangle(cornerRadius: 20)
-                                                .stroke(.pink, lineWidth: 4)
+                                                .stroke(.black, lineWidth: 4)
                                         }
                                     
                                 }
@@ -55,11 +55,8 @@ struct FavouritesView: View {
                     } label: {
                         Text("Удалить все")
                     }
-                    
                 }
             }
-            
-            
         }
     }
 }
