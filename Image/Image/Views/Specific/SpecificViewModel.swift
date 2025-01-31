@@ -8,6 +8,12 @@
 import SwiftUI
 import CoreData
 
+struct Fox {
+    var name: String?
+    var discription: String?
+    var age: Int16?
+}
+
 final class SpecificViewModel: ObservableObject {
     
     let imageStorage: ImageStorage
@@ -16,8 +22,8 @@ final class SpecificViewModel: ObservableObject {
         self.imageStorage = imageStorage
     }
     
-    func addComment(text: String, objectID: NSManagedObjectID) {
-        imageStorage.edit(objectID: objectID, comment: text)
+    func addComment(objectID: NSManagedObjectID, fox: Fox) {
+        imageStorage.edit(objectID: objectID, fox: fox)
     }
 }
 

@@ -19,18 +19,21 @@ struct HomeView: View {
     
     var body: some View {
         NavigationStack {
+            
             ZStack {
+                
                 ScrollView(.vertical) {
+                    
                     VStack {
                         //Изображение по URL
                         if let image = viewModel.uiImage {
                             Image(uiImage: image)
                                 .resizable()
                                 .scaledToFit()
-                                .cornerRadius(20)
+                                .cornerRadius(10)
                                 .overlay{
-                                    RoundedRectangle(cornerRadius: 20)
-                                        .stroke(.black, lineWidth: 4)
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .stroke(.black, lineWidth: 3)
                                 }
                                 .padding(16)
                         }
@@ -60,16 +63,12 @@ struct HomeView: View {
                             }
                             .padding(-230)
                             .scaleEffect(0.06)
-                            
                         }
                     }
                     .navigationBarTitle(Text("Main screen"))
                 }
             }
-            
         }
         .padding(.horizontal, 16)
-        
     }
-    
 }

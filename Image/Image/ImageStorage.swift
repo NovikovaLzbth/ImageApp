@@ -36,28 +36,32 @@ final class ImageStorage: ObservableObject {
         }
     }
     
-    //найти элемент в бд и получить его по objectID
-    func edit(objectID: NSManagedObjectID?, comment: String) {
-        guard let objectID = objectID else {
-            
+    func edit(objectID: NSManagedObjectID?, fox: Fox) {
+        guard
+            let objectID = objectID,
+            var image = try? self.context.existingObject(with: objectID) as? FoxImage
+        else {
             return
         }
         
-        let image = try self.context.existingObject(with: objectID) as! FoxImage
-        
-        image.comment = comment
-        catch {
-            image = FoxImage(context: context)
-            image.comment = comment
+        if let name = fox.name {
+            image.name = name
         }
         
-        DispatchQueue.main.async {
-            do {
-                try self.context.save()
-                print("комментарий добавлен")
-            } catch {
-                print("Ошибка")
-            }
+        if let discription = fox.discription {
+            image.discription = discription
+        }
+        
+        if let age = fox.age {
+            image.age = age
+        }
+        
+        do {
+            try self.context.save()
+            print("комментарий добавлен")
+            print(image)
+        } catch {
+            print("Ошибка")
         }
     }
     

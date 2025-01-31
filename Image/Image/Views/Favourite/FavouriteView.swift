@@ -26,16 +26,16 @@ struct FavouritesView: View {
                         if let data = image.data {
                             if let uiImage = UIImage(data: data) {
                                 NavigationLink {
-                                    SpecificView(imageStorage: viewModel.imageStorage, fieldValue: "", image: image)
+                                    SpecificView(imageStorage: viewModel.imageStorage, fieldValueName: "", image: image, fieldValueDescription: "", fieldValueAge: "")
                                 } label: {
                                     Image(uiImage: uiImage)
                                         .resizable()
                                         .scaledToFit()
                                         .frame(height: 200)
-                                        .cornerRadius(20)
+                                        .cornerRadius(10)
                                         .overlay{
-                                            RoundedRectangle(cornerRadius: 20)
-                                                .stroke(.black, lineWidth: 4)
+                                            RoundedRectangle(cornerRadius: 10)
+                                                .stroke(.black, lineWidth: 3)
                                         }
                                     
                                 }
@@ -53,7 +53,7 @@ struct FavouritesView: View {
                     Button {
                         viewModel.deleteAll()
                     } label: {
-                        Text("Удалить все")
+                        Text("Delete all")
                     }
                 }
             }
