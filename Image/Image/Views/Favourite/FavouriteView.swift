@@ -31,7 +31,6 @@ struct FavouritesView: View {
                                     Image(uiImage: uiImage)
                                         .resizable()
                                         .scaledToFit()
-                                        .frame(height: 200)
                                         .cornerRadius(10)
                                         .overlay{
                                             RoundedRectangle(cornerRadius: 10)

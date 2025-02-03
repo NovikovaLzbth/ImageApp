@@ -8,10 +8,24 @@
 import SwiftUI
 import CoreData
 
+//Смена кнопки добавления в избранное по нажатию
+struct PressedButtonStyle: ButtonStyle {
+    let title: String
+    let systemImage: String
+    let pressedImage: String
+    
+    func makeBody(configuration: Configuration) -> some View {
+        let imageName = configuration.isPressed ? pressedImage : systemImage
+        return Label(title, systemImage: imageName)
+            .symbolEffect(.scale.up, isActive: configuration.isPressed)
+    }
+}
+
 struct HomeView: View {
     
     @StateObject private var viewModel: HomeViewModel
     @State private var isShowProgressView = false
+    @State private var showAlert = false
     
     init(imageStorage: ImageStorage) {
         _viewModel = StateObject(wrappedValue: HomeViewModel(imageStorage: imageStorage))
@@ -36,12 +50,24 @@ struct HomeView: View {
                                         .stroke(.black, lineWidth: 3)
                                 }
                                 .padding(16)
+                        } else {
+                            if viewModel.url != nil {
+                                Image("pngwing.png")
+                                    .resizable()
+                                    .scaledToFit ()
+                                    .frame(width: 160)
+                                    .cornerRadius(10)
+                            }
                         }
                         
                         HStack {
                             //Кнопка смены изображения
                             Button(action: {
-                                viewModel.getImage()
+                                if viewModel.isConnected {
+                                    viewModel.getImage()
+                                } else {
+                                    showAlert = true
+                                }
                             }, label: {
                                 Text("Change image")
                                     .font(.system(size: 20))
@@ -54,16 +80,35 @@ struct HomeView: View {
                                 
                             })
                             .frame(height: 120)
+                            .alert(isPresented: $showAlert) {
+                                Alert(title: Text("No Internet сonnection"),
+                                      message: Text("Please check your internet connection and try again"),
+                                      dismissButton: .default(Text("OK")))
+                            }
                             
                             //Кнопка для добавления в избранное
-                            Button {
-                                viewModel.saveImage()
-                            } label: {
-                                Image("pngwing.png")
+                            Button ("") {
+                                if viewModel.isConnected {
+                                    viewModel.saveImage()
+                                } else {
+                                    showAlert = true
+                                }
                             }
-                            .padding(-230)
-                            .scaleEffect(0.06)
+                            .buttonStyle(
+                                PressedButtonStyle(
+                                    title: "",
+                                    systemImage: "heart",
+                                    pressedImage: "heart.fill")
+                            )
+                            .scaleEffect(1.5)
+                            .padding(.horizontal, 16)
+                            .alert(isPresented: $showAlert) {
+                                Alert(title: Text("No Internet сonnection"),
+                                      message: Text("Please check your internet connection and try again"),
+                                      dismissButton: .default(Text("OK")))
+                            }
                         }
+                        
                     }
                     .navigationBarTitle(Text("Main screen"))
                 }

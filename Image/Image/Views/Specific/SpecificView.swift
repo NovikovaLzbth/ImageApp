@@ -85,7 +85,7 @@ struct SpecificView: View {
                     if let name = image.name,
                        let discription = image.discription {
                         
-                        Text("Name: \(name), Description: \(discription), Age: \(image.age)")
+                        Text("Name: \(name) \nDescription: \(discription)\nAge: \(image.age)")
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.horizontal, 16)
                     }
