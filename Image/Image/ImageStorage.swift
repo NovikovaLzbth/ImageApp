@@ -36,23 +36,6 @@ final class ImageStorage: ObservableObject {
         }
     }
     
-    func writeImageURL(image: UIImage) {
-        guard let data = image.pngData() else { return }
-        let image = FoxImage(context: context)
-        
-        image.data = data
-        image.uuid = UUID()
-        
-        DispatchQueue.main.async {
-            do {
-                try self.context.save()
-                print("изображение сохранено")
-            } catch {
-                print("Ошибка сохранения в базу данных")
-            }
-        }
-    }
-    
     func edit(objectID: NSManagedObjectID?, fox: Fox) {
         guard
             let objectID = objectID,

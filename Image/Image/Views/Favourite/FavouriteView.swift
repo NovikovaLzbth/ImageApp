@@ -53,6 +53,7 @@ struct FavouritesView: View {
                         viewModel.deleteAll()
                     } label: {
                         Text("Delete all")
+                            .colorMultiply(.black)
                     }
                 }
             }

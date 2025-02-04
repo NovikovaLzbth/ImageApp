@@ -8,6 +8,14 @@
 import SwiftUI
 import CoreData
 
+struct ButtonPressed: ButtonStyle {
+    
+    func makeBody(configuration: Self.Configuration) -> some View { configuration.label
+            .scaleEffect(configuration.isPressed ? 0.8 : 1.0)
+    }
+}
+
+
 struct SpecificView: View {
     
     @StateObject private var viewModel: SpecificViewModel
@@ -15,6 +23,9 @@ struct SpecificView: View {
     @State var fieldValueName: String
     @State var fieldValueDescription: String
     @State var fieldValueAge: String
+    @State private var isEdit = false
+    
+    @FocusState private var nameIsFocused: Bool
     
     var image: FoxImage = FoxImage()
     
@@ -47,23 +58,86 @@ struct SpecificView: View {
                                 }
                         }
                         
-                        //Ввод комментария
+                        Text("Your comment:")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .font(.title)
+                            .fontWeight(.bold)
+                            .padding(.top, 36)
+                        
+                        //Комментарий
                         HStack {
-                            TextField("Name", text: $fieldValueName)
-                            TextField("Description", text: $fieldValueDescription)
-                            TextField("Age", text: $fieldValueAge)
-                            
-                            Button {
-                                let fox = Fox(
-                                    name: fieldValueName,
-                                    discription: fieldValueDescription,
-                                    age: Int16(fieldValueAge)
-                                )
+                            if let name = image.name,
+                               let discription = image.discription {
                                 
-                                viewModel.addComment(objectID: image.objectID, fox: fox)
-                            } label: {
-                                Label("Send", systemImage: "arrowshape.turn.up.right.fill")
-                                    .colorMultiply(.black)
+                                HStack {
+                                    if isEdit {
+                                        
+                                        VStack {
+                                            TextField("Name...", text: $fieldValueName)
+                                            TextField("Description...", text: $fieldValueDescription)
+                                            TextField("Age...", text: $fieldValueAge)
+                                                
+                                        }
+                                        
+                                        Button("Save") {
+                                            let fox = Fox(
+                                                name: fieldValueName,
+                                                discription: fieldValueDescription,
+                                                age: Int16(fieldValueAge)
+                                            )
+                                            
+                                            viewModel.addComment(objectID: image.objectID, fox: fox)
+                                            
+                                            isEdit = false
+                                        }
+                                    } else {
+                                        
+                                        Text("Name: \(name) \nDescription: \(discription)\nAge: \(image.age)")
+                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                        
+                                        Button (action: {
+                                            fieldValueName = name
+                                            fieldValueDescription = discription
+                                            fieldValueAge = "\(image.age)"
+                                            isEdit = true
+                                        }, label: {
+                                            Label("", systemImage: "pencil")
+                                                .colorMultiply(.black)
+                                        })
+                                        .scaleEffect(1.8)
+                                    }
+                                }
+                            } else {
+                                VStack {
+                                    TextField("Name...", text: $fieldValueName, onCommit: {
+                                        let fox = Fox(
+                                            name: fieldValueName,
+                                            discription: fieldValueDescription,
+                                            age: Int16(fieldValueAge)
+                                        )
+                                        
+                                        viewModel.addComment(objectID: image.objectID, fox: fox)
+                                    })
+                                    TextField("Description...", text: $fieldValueDescription, onCommit: {
+                                        let fox = Fox(
+                                            name: fieldValueName,
+                                            discription: fieldValueDescription,
+                                            age: Int16(fieldValueAge)
+                                        )
+                                        
+                                        viewModel.addComment(objectID: image.objectID, fox: fox)
+                                    })
+                                    TextField("Age...", text: $fieldValueAge, onCommit: {
+                                        let fox = Fox(
+                                            name: fieldValueName,
+                                            discription: fieldValueDescription,
+                                            age: Int16(fieldValueAge)
+                                        )
+                                        
+                                        viewModel.addComment(objectID: image.objectID, fox: fox)
+                                    })
+                                }
+                                .focused($nameIsFocused)
                             }
                         }
                         .padding()
@@ -71,27 +145,12 @@ struct SpecificView: View {
                             RoundedRectangle(cornerRadius: 20)
                                 .stroke(.gray, lineWidth: 2)
                         }
-                        .padding(.vertical, 5)
                     }
                     .padding(16)
-                    
-                    Text("Your comments:")
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .font(.title)
-                        .fontWeight(.bold)
-                        .padding(16)
-                    
-                    //Сохранение комментарияв списке
-                    if let name = image.name,
-                       let discription = image.discription {
-                        
-                        Text("Name: \(name) \nDescription: \(discription)\nAge: \(image.age)")
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.horizontal, 16)
-                    }
                 }
             }
         }
         .padding(.horizontal, 16)
+        
     }
 }
