@@ -14,10 +14,6 @@ final class FavouritesViewModel: ObservableObject {
         self.imageStorage = imageStorage
     }
     
-    func delete(at offsets: IndexSet) {
-        imageStorage.delete(at: offsets, images: imageStorage.fetchImages())
-    }
-    
     func deleteAll() {
         imageStorage.deleteAll()
     }

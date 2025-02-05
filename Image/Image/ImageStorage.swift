@@ -25,6 +25,7 @@ final class ImageStorage: ObservableObject {
         
         image.data = data
         image.uuid = UUID()
+        image.date = Date()
         
         DispatchQueue.main.async {
             do {
@@ -65,8 +66,8 @@ final class ImageStorage: ObservableObject {
         }
     }
     
-    func delete(at offsets: IndexSet, images: [FoxImage]) {
-        offsets.map { images[$0] }.forEach(context.delete)
+    func delete(image: FoxImage) {
+        context.delete(image)
         
         do {
             try context.save()

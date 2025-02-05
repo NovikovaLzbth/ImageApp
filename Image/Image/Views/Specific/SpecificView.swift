@@ -24,6 +24,7 @@ struct SpecificView: View {
     @State var fieldValueDescription: String
     @State var fieldValueAge: String
     @State private var isEdit = false
+    @State private var showAlert = false
     
     @FocusState private var nameIsFocused: Bool
     
@@ -35,6 +36,17 @@ struct SpecificView: View {
         self.fieldValueName = fieldValueName
         self.fieldValueDescription = fieldValueDescription
         self.fieldValueAge = fieldValueAge
+    }
+    
+    private func dateAndTime(_ date: Date) -> String {
+        let dateFormatter = DateFormatter()
+        
+        dateFormatter.calendar = Calendar(identifier: .gregorian)
+        dateFormatter.locale = Locale(identifier: "ru_RU")
+        dateFormatter.dateFormat = "dd-MM-yyyy, HH:mm"
+        let dateString = dateFormatter.string(from: date)
+        
+        return dateString
     }
     
     var body: some View {
@@ -58,11 +70,17 @@ struct SpecificView: View {
                                 }
                         }
                         
+                        //Дата добавления в избранное
+                        if let dateFox = image.date {
+                            Text ("\(dateAndTime(dateFox))")
+                                .foregroundColor(.gray)
+                        }
+                        
                         Text("Your comment:")
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .font(.title)
                             .fontWeight(.bold)
-                            .padding(.top, 36)
+                            .padding(.top, 32)
                         
                         //Комментарий
                         HStack {
@@ -145,12 +163,25 @@ struct SpecificView: View {
                             RoundedRectangle(cornerRadius: 20)
                                 .stroke(.gray, lineWidth: 2)
                         }
+                        
                     }
                     .padding(16)
                 }
             }
         }
-        .padding(.horizontal, 16)
-        
+        .toolbar {
+            Button {
+                viewModel.delete(image: image)
+                    showAlert = true
+                
+            } label: {
+                Label("", systemImage: "trash")
+            }
+            .alert(isPresented: $showAlert) {
+                Alert(title: Text("Delete"),
+                      message: Text("Image removed"),
+                      dismissButton: .default(Text("OK")))
+            }
+        }
     }
 }

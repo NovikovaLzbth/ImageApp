@@ -22,6 +22,10 @@ final class SpecificViewModel: ObservableObject {
         self.imageStorage = imageStorage
     }
     
+    func delete(image: FoxImage) {
+        imageStorage.delete(image: image)
+    }
+    
     func addComment(objectID: NSManagedObjectID, fox: Fox) {
         imageStorage.edit(objectID: objectID, fox: fox)
     }

@@ -86,34 +86,60 @@ struct HomeView: View {
                                       dismissButton: .default(Text("OK")))
                             }
                             
-                            //Кнопка для добавления в избранное
-                            Button ("") {
+                            Button {
                                 if viewModel.isConnected {
                                     viewModel.saveImage()
                                 } else {
                                     showAlert = true
                                 }
+                            } label: {
+                                Image(systemName: "heart.fill")
+                                    .foregroundStyle(Color.red)
+                                    .scaleEffect(1.5)
                             }
-                            .buttonStyle(
-                                PressedButtonStyle(
-                                    title: "",
-                                    systemImage: "heart",
-                                    pressedImage: "heart.fill")
-                            )
-                            .scaleEffect(1.5)
                             .padding(.horizontal, 16)
-                            .alert(isPresented: $showAlert) {
-                                Alert(title: Text("No Internet сonnection"),
-                                      message: Text("Please check your internet connection and try again"),
-                                      dismissButton: .default(Text("OK")))
-                            }
                         }
                         
                     }
                     .navigationBarTitle(Text("Main screen"))
+                    .alert(isPresented: $showAlert) {
+                        Alert(title: Text("No Internet сonnection"),
+                              message: Text("Please check your internet connection and try again"),
+                              dismissButton: .default(Text("OK")))
+                    }
                 }
             }
         }
-        .padding(.horizontal, 16)
+    }
+}
+
+// TODO: - Remove
+
+struct Neumorphic: ViewModifier {
+    var bgColor: Color
+    @Binding var isPressed: Bool
+
+    func body(content: Content) -> some View {
+        content
+            .padding(20)
+            .background(
+                ZStack {
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .shadow(color: .white, radius: self.isPressed ? 7: 10, x: self.isPressed ? -5: -15, y: self.isPressed ? -5: -15)
+                        .shadow(color: .black, radius: self.isPressed ? 7: 10, x: self.isPressed ? 5: 15, y: self.isPressed ? 5: 15)
+                        .blendMode(.overlay)
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .fill(bgColor)
+                }
+            )
+            .scaleEffect(self.isPressed ? 0.95: 1)
+            .foregroundColor(.primary)
+            .animation(.spring())
+    }
+}
+
+extension View {
+    func neumorphic(isPressed: Binding<Bool>, bgColor: Color) -> some View {
+        self.modifier(Neumorphic(bgColor: bgColor, isPressed: isPressed))
     }
 }

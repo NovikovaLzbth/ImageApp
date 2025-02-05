@@ -18,45 +18,76 @@ struct FavouritesView: View {
         _viewModel = StateObject(wrappedValue: FavouritesViewModel(imageStorage: imageStorage))
     }
     
+    let colomn = [
+        GridItem(.fixed(160)),
+        GridItem(.fixed(160))
+    ]
+    
     var body: some View {
         NavigationStack {
             VStack {
-                List {
-                    ForEach(images, id: \.self) { image in
-                        if let data = image.data {
-                            if let uiImage = UIImage(data: data) {
-                                NavigationLink {
-                                    SpecificView(imageStorage: viewModel.imageStorage, fieldValueName: "", image: image, fieldValueDescription: "", fieldValueAge: "")
-                                } label: {
-                                    Image(uiImage: uiImage)
-                                        .resizable()
-                                        .scaledToFit()
-                                        .cornerRadius(10)
-                                        .overlay{
-                                            RoundedRectangle(cornerRadius: 10)
-                                                .stroke(.black, lineWidth: 3)
+                ScrollView(.vertical) {
+                    LazyVGrid(columns: colomn, alignment: .center) {
+                        ForEach(images, id: \.self) { image in
+                            if let data = image.data {
+                                if let uiImage = UIImage(data: data) {
+                                    NavigationLink {
+                                        SpecificView(imageStorage: viewModel.imageStorage, fieldValueName: "", image: image, fieldValueDescription: "", fieldValueAge: "")
+                                    } label: {
+                                        VStack {
+                                            Image(uiImage: uiImage)
+                                                .resizable()
+                                                .aspectRatio(contentMode: .fill)
+                                                .frame(width: 160, height: 160)
+                                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                                                .overlay {
+                                                    RoundedRectangle(cornerRadius: 10)
+                                                        .stroke(.black, lineWidth: 2)
+                                                }
+                                            
+                                            Text("\(image.name ?? " ")")
+                                                .foregroundStyle(.black)
+                                            
+                                            if let date = image.date {
+                                                Text("\(dateAndTime(date))")
+                                                    .foregroundColor(.gray)
+                                            }
                                         }
-                                    
+                                    }
                                 }
                             }
                         }
-                    }
-                    .onDelete { index in
-                        viewModel.delete(at: index)
                     }
                 }
             }
             .navigationBarTitle(Text("Favourites"))
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        viewModel.deleteAll()
+                    Menu {
+                        Menu("Sorting") {
+                            Button("Default", action: viewModel.deleteAll)
+                            Button("By name", action: viewModel.deleteAll)
+                            Button("By date", action: viewModel.deleteAll)
+                        }
+                        Button("Delete all", action: viewModel.deleteAll)
                     } label: {
-                        Text("Delete all")
-                            .colorMultiply(.black)
+                        Label("", systemImage: "line.3.horizontal")
                     }
                 }
             }
         }
+        
+    }
+    
+    private func dateAndTime(_ date: Date) -> String {
+        let dateFormatter = DateFormatter()
+        
+        dateFormatter.calendar = Calendar(identifier: .gregorian)
+        dateFormatter.locale = Locale(identifier: "ru_RU")
+        dateFormatter.dateFormat = "dd-MM-yyyy, HH:mm"
+        let dateString = dateFormatter.string(from: date)
+        
+        return dateString
     }
 }
+
