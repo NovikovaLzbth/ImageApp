@@ -65,9 +65,22 @@ struct FavouritesView: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Menu {
                         Menu("Sorting") {
-                            Button("Default", action: viewModel.deleteAll)
-                            Button("By name", action: viewModel.deleteAll)
-                            Button("By date", action: viewModel.deleteAll)
+                            Button("Default", action: {
+                                
+                                viewModel.sortType = .defaultOrder
+                            })
+                            
+                            Button("By name", action: {
+                                
+                                viewModel.sortType = .byName
+//                                viewModel.sort()
+                            })
+                            
+                            Button("By date", action: {
+                                
+                                viewModel.sortType = .byDate
+//                                viewModel.sort()
+                            })
                         }
                         Button("Delete all", action: viewModel.deleteAll)
                     } label: {
@@ -76,7 +89,6 @@ struct FavouritesView: View {
                 }
             }
         }
-        
     }
     
     private func dateAndTime(_ date: Date) -> String {
