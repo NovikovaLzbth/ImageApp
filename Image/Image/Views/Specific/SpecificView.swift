@@ -8,14 +8,6 @@
 import SwiftUI
 import CoreData
 
-struct ButtonPressed: ButtonStyle {
-    
-    func makeBody(configuration: Self.Configuration) -> some View { configuration.label
-            .scaleEffect(configuration.isPressed ? 0.8 : 1.0)
-    }
-}
-
-
 struct SpecificView: View {
     
     @StateObject private var viewModel: SpecificViewModel
@@ -30,7 +22,13 @@ struct SpecificView: View {
     
     var image: FoxImage = FoxImage()
     
-    init(imageStorage: ImageStorage, fieldValueName: String, image: FoxImage, fieldValueDescription: String, fieldValueAge: String) {
+    init(
+        imageStorage: ImageStorage,
+        fieldValueName: String,
+        image: FoxImage,
+        fieldValueDescription: String,
+        fieldValueAge: String
+    ) {
         _viewModel = StateObject(wrappedValue: SpecificViewModel(imageStorage: imageStorage))
         self.image = image
         self.fieldValueName = fieldValueName
@@ -50,14 +48,11 @@ struct SpecificView: View {
     }
     
     var body: some View {
-        
         NavigationStack {
-            
             ScrollView {
-                
                 VStack {
-                    
                     VStack {
+                        
                         //Передача изображения
                         if let imageData = image.data, let uiImage = UIImage(data: imageData) {
                             Image(uiImage: uiImage)
@@ -84,12 +79,13 @@ struct SpecificView: View {
                         
                         //Комментарий
                         HStack {
-                            if let name = image.name,
-                               let discription = image.discription {
+                            if
+                                let name = image.name,
+                                let discription = image.discription
+                            {
                                 
                                 HStack {
                                     if isEdit {
-                                        
                                         VStack {
                                             TextField("Name...", text: $fieldValueName)
                                             TextField("Description...", text: $fieldValueDescription)
@@ -136,6 +132,7 @@ struct SpecificView: View {
                                         
                                         viewModel.addComment(objectID: image.objectID, fox: fox)
                                     })
+                                    
                                     TextField("Description...", text: $fieldValueDescription, onCommit: {
                                         let fox = Fox(
                                             name: fieldValueName,
@@ -145,6 +142,7 @@ struct SpecificView: View {
                                         
                                         viewModel.addComment(objectID: image.objectID, fox: fox)
                                     })
+                                    
                                     TextField("Age...", text: $fieldValueAge, onCommit: {
                                         let fox = Fox(
                                             name: fieldValueName,
@@ -163,7 +161,6 @@ struct SpecificView: View {
                             RoundedRectangle(cornerRadius: 20)
                                 .stroke(.gray, lineWidth: 2)
                         }
-                        
                     }
                     .padding(16)
                 }

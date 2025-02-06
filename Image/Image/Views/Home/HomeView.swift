@@ -20,13 +20,11 @@ struct HomeView: View {
     
     var body: some View {
         NavigationStack {
-            
             ZStack {
-                
                 ScrollView(.vertical) {
-                    
                     VStack {
-                        //Изображение по URL
+                        
+                        // Изображение по URL
                         if let image = viewModel.uiImage {
                             Image(uiImage: image)
                                 .resizable()
@@ -48,6 +46,7 @@ struct HomeView: View {
                         }
                         
                         HStack {
+                            
                             //Кнопка смены изображения
                             Button(action: {
                                 if viewModel.isConnected {
@@ -68,9 +67,11 @@ struct HomeView: View {
                             })
                             .frame(height: 120)
                             .alert(isPresented: $showAlert) {
-                                Alert(title: Text("No Internet сonnection"),
-                                      message: Text("Please check your internet connection and try again"),
-                                      dismissButton: .default(Text("OK")))
+                                Alert(
+                                    title: Text("No Internet сonnection"),
+                                    message: Text("Please check your internet connection and try again"),
+                                    dismissButton: .default(Text("OK"))
+                                )
                             }
                             
                             //Добавление в избранное
@@ -91,9 +92,11 @@ struct HomeView: View {
                     }
                     .navigationBarTitle(Text("Main screen"))
                     .alert(isPresented: $showAlert) {
-                        Alert(title: Text("No Internet сonnection"),
-                              message: Text("Please check your internet connection and try again"),
-                              dismissButton: .default(Text("OK")))
+                        Alert(
+                            title: Text("No Internet сonnection"),
+                            message: Text("Please check your internet connection and try again"),
+                            dismissButton: .default(Text("OK"))
+                        )
                     }
                 }
             }

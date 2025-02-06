@@ -75,21 +75,13 @@ struct FavouritesView: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Menu {
                         Menu("Sorting") {
-                            Button("Default", action: {
-                                
-                                viewModel.sortType = .defaultOrder
-                            })
+                            Button("Default", action: { viewModel.sortType = .defaultOrder })
                             
-                            Button("By name", action: {
-                                
-                                viewModel.sortType = .byName
-                            })
+                            Button("By name", action: { viewModel.sortType = .byName })
                             
-                            Button("By date", action: {
-                                
-                                viewModel.sortType = .byDate
-                            })
+                            Button("By date", action: { viewModel.sortType = .byDate })
                         }
+                        
                         Button("Delete all", action: viewModel.deleteAll)
                     } label: {
                         Label("", systemImage: "line.3.horizontal")

@@ -28,6 +28,7 @@ final class HomeViewModel: ObservableObject {
                 self.isConnected = path.status == .satisfied
             }
         }
+        
         let queue = DispatchQueue(label: "Monitor")
         monitor.start(queue: queue)
         self.getImage()

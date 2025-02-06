@@ -30,10 +30,7 @@ final class ImageStorage: ObservableObject {
         DispatchQueue.main.async {
             do {
                 try self.context.save()
-                print("изображение сохранено")
-            } catch {
-                print("Ошибка сохранения в базу данных")
-            }
+            } catch { }
         }
     }
     
