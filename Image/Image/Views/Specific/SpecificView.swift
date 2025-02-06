@@ -110,7 +110,7 @@ struct SpecificView: View {
                                         }
                                     } else {
                                         
-                                        Text("Name: \(name) \nDescription: \(discription)\nAge: \(image.age)")
+                                        Text("\(name)\n\(discription)\n\(image.age)")
                                             .frame(maxWidth: .infinity, alignment: .leading)
                                         
                                         Button (action: {

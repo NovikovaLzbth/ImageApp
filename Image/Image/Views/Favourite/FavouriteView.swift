@@ -28,7 +28,17 @@ struct FavouritesView: View {
             VStack {
                 ScrollView(.vertical) {
                     LazyVGrid(columns: colomn, alignment: .center) {
-                        ForEach(images, id: \.self) { image in
+                        ForEach(images.sorted {
+                            
+                            switch viewModel.sortType {
+                            case .byName:
+                                $0.name ?? "" < $1.name ?? ""
+                            case .byDate:
+                                $0.date ?? Date() < $1.date ?? Date()
+                            case .defaultOrder:
+                                false
+                            }
+                        }, id: \.self) { image in
                             if let data = image.data {
                                 if let uiImage = UIImage(data: data) {
                                     NavigationLink {
@@ -73,13 +83,11 @@ struct FavouritesView: View {
                             Button("By name", action: {
                                 
                                 viewModel.sortType = .byName
-//                                viewModel.sort()
                             })
                             
                             Button("By date", action: {
                                 
                                 viewModel.sortType = .byDate
-//                                viewModel.sort()
                             })
                         }
                         Button("Delete all", action: viewModel.deleteAll)
